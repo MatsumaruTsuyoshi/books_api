@@ -1,10 +1,11 @@
 package repository
 
 import (
+	"log"
+
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/MatsumaruTsuyoshi/books_api/model/entity"
-	_ "github.com/MatsumaruTsuyoshi/books_api/model/entity"
 )
 
 type BookRepository interface {
@@ -25,6 +26,22 @@ func NewBookRepository() BookRepository {
 func (tr *bookRepositry) GetBooks() (books []entity.BookEntity, err error) {
 	// todo update procces
 	books = []entity.BookEntity{}
+	rows, err := Db.Query("SELECT id, title FROM todo ORDER BY id DESC")
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
+	for rows.Next() {
+		todo := entity.BookEntity{}
+		err = rows.Scan(&todo.Id, &todo.Title)
+		if err != nil {
+			log.Print(err)
+			return
+		}
+		books = append(books, todo)
+	}
+
 	return
 }
 

@@ -1,8 +1,10 @@
 package controller
 
 import (
+	"encoding/json"
 	"net/http"
 
+	"github.com/MatsumaruTsuyoshi/books_api/controller/dto"
 	"github.com/MatsumaruTsuyoshi/books_api/model/repository"
 )
 
@@ -18,12 +20,29 @@ type bookController struct {
 	br repository.BookRepository
 }
 
-func NewBookRepository(br repository.BookRepository) BookController {
+func NewBookController(br repository.BookRepository) BookController {
 	return &bookController{br}
 }
 
 func (bc *bookController) GetBooks(w http.ResponseWriter, r *http.Request) {
-	//todo write process
+	todos, err := bc.br.GetBooks()
+	if err != nil {
+		w.WriteHeader(500)
+		return
+	}
+
+	var bookResponses []dto.BookResponse
+	for _, v := range todos {
+		bookResponses = append(bookResponses, dto.BookResponse{Id: v.Id, Title: v.Title})
+	}
+
+	var booksResponses dto.BooksResponse
+	booksResponses.Books = bookResponses
+
+	output, _ := json.MarshalIndent(booksResponses.Books, "", "\t\t")
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(output)
 
 }
 
