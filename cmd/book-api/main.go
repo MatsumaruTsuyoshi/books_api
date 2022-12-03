@@ -15,6 +15,6 @@ func main() {
 	server := http.Server{
 		Addr: ":8080",
 	}
-	http.HandleFunc("/todos/", ro.HandleBooksRequest)
+	http.HandleFunc("/books/", ro.HandleBooksRequest)
 	server.ListenAndServe()
 }
